@@ -71,6 +71,11 @@ function ui.drawUI()
                         imgui.PushStyleColor(ImGuiCol_ButtonActive, { 0.5, 0.2, 1.0, 1.0 })
                     end
                     if imgui.Button(spell) then
+                        if utils.isTargetBusy() then
+                            print(chat.header(addon.name):append(chat.error('Target cannot be procced at this moment')))
+                            return
+                        end
+
                         lastSpell = spell
                         utils.castSpell(spell, 't')
                         utils.clickedButtons[spell] = true
