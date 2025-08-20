@@ -1,3 +1,14 @@
+local mobStatus = {
+    normal = 1,
+    weaponskill = 2,
+    casting = 3,
+    stunned = 4,
+    [1] = 'Normal',
+    [2] = 'Weaponskill',
+    [3] = 'Casting',
+    [4] = 'Stunned'
+}
+
 ui = {}
 lastSpell = 'None'
 targetStatus = mobStatus.normal
@@ -23,7 +34,23 @@ end
 
 function ui.drawUI()
     if imgui.Begin('doubleyellowexclamationpoint', dyep.visible, ImGuiWindowFlags_AlwaysAutoResize) then
-        imgui.Text(string.format('Target status: %s', mobStatus[targetStatus]))
+        -- Color the status if not normal
+        local statusText = string.format('Target status: %s', mobStatus[targetStatus] or 'Unknown')
+        if targetStatus ~= mobStatus.normal then
+            local color = { 1.0, 0.5, 0.2, 1.0 } -- default abnormal (orange)
+            if targetStatus == mobStatus.weaponskill then
+                color = { 1.0, 0.4, 0.2, 1.0 } -- orange-red for weaponskill
+            elseif targetStatus == mobStatus.casting then
+                color = { 0.2, 0.6, 1.0, 1.0 } -- blue for casting
+            elseif targetStatus == mobStatus.stunned then
+                color = { 1.0, 0.2, 0.2, 1.0 } -- red for stunned
+            end
+            imgui.PushStyleColor(imgui.Col.Text, color)
+            imgui.Text(statusText)
+            imgui.PopStyleColor()
+        else
+            imgui.Text(statusText)
+        end
         imgui.Text(string.format('Last spell used: %s', lastSpell))
         imgui.Text(string.format('Claimed by: %s', utils.getPartyClaimerName(utils.getTarget())))
 
