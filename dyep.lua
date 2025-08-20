@@ -52,7 +52,7 @@ ashita.events.register('packet_in', 'packet_in_cb', function (e)
         end
 
         local mobId = ap.UserId
-        utils.mobActionState[mobId] = os.clock() + 3
+        utils.mobActionState[mobId] = os.clock() + 5
     end
 end)
 

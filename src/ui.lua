@@ -65,14 +65,20 @@ function ui.drawUI()
                 imgui.Text(day.day)
                 for i, spell in ipairs(day.spells) do
                     local isClicked = utils.clickedButtons[spell]
+                    local pushedStyle = false
                     if isClicked then
                         imgui.PushStyleColor(ImGuiCol_Button, { 0.5, 0.2, 1.0, 1.0 })
                         imgui.PushStyleColor(ImGuiCol_ButtonHovered, { 0.5, 0.2, 1.0, 1.0 })
                         imgui.PushStyleColor(ImGuiCol_ButtonActive, { 0.5, 0.2, 1.0, 1.0 })
+                        pushedStyle = true
                     end
-                    if imgui.Button(spell) then
+                    local buttonClicked = imgui.Button(spell)
+                    if buttonClicked then
                         if utils.isTargetBusy() then
                             print(chat.header(addon.name):append(chat.error('Target cannot be procced at this moment')))
+                            if pushedStyle then
+                                imgui.PopStyleColor(3)
+                            end
                             return
                         end
 
@@ -80,7 +86,7 @@ function ui.drawUI()
                         utils.castSpell(spell, 't')
                         utils.clickedButtons[spell] = true
                     end
-                    if isClicked then
+                    if pushedStyle then
                         imgui.PopStyleColor(3)
                     end
                     if i % spellsPerLine ~= 0 then
