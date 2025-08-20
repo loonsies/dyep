@@ -39,13 +39,14 @@ function ui.drawUI()
         if targetStatus ~= mobStatus.normal then
             local color = { 1.0, 0.5, 0.2, 1.0 } -- default abnormal (orange)
             if targetStatus == mobStatus.weaponskill then
-                color = { 1.0, 0.4, 0.2, 1.0 } -- orange-red for weaponskill
+                color = { 1.0, 0.4, 0.2, 1.0 }   -- orange-red for weaponskill
             elseif targetStatus == mobStatus.casting then
-                color = { 0.2, 0.6, 1.0, 1.0 } -- blue for casting
+                color = { 0.2, 0.6, 1.0, 1.0 }   -- blue for casting
             elseif targetStatus == mobStatus.stunned then
-                color = { 1.0, 0.2, 0.2, 1.0 } -- red for stunned
+                color = { 1.0, 0.2, 0.2, 1.0 }   -- red for stunned
             end
-            imgui.PushStyleColor(imgui.Col.Text, color)
+            local ImGuiCol_Text = _G.ImGuiCol_Text
+            imgui.PushStyleColor(ImGuiCol_Text, color)
             imgui.Text(statusText)
             imgui.PopStyleColor()
         else
