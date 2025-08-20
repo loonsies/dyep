@@ -54,8 +54,8 @@ ashita.events.register('packet_in', 'packet_in_cb', function (e)
                 targetStatus = mobStatus.casting
             end
 
-            if dyep.isCasting then
-                print(chat.header(addon.name):append(chat.error('Target became unproccable while casting!! Spell: ' .. dyep.currentSpell)))
+            if dyep.isCasting and lastSpell then
+                print(chat.header(addon.name):append(chat.error('Target became unproccable while casting!! Spell: ' .. lastSpell)))
             end
 
             local mobId = ap.UserId
