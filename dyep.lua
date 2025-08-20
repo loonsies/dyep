@@ -21,6 +21,7 @@ dyep = {
     config = config.load(),
     prevTargetHP = -1,
     prevTargetID = -1,
+    isCasting = false,
 }
 
 commands = require('src/commands')
@@ -34,25 +35,53 @@ ashita.events.register('command', 'command_cb', function (cmd, nType)
     end
 end)
 
+local actionCompleteTypes = T { 2, 3, 4, 5, 6, 14, 15 };
+
 ashita.events.register('packet_in', 'packet_in_cb', function (e)
     if e.id ~= 0x028 then return end
 
     local ap = utils.parseActionPacket(e)
 
-    if ap and ap.Type == 7 or ap.Type == 8 then
-        if not utils.isMonster(ap.UserIndex) then return end
 
-        local targetEntity = utils.getTarget()
-        if ap.UserIndex ~= targetEntity then return end
+    if utils.isMonster(ap.UserIndex) then
+        if ap and ap.Type == 7 or ap.Type == 8 then
+            local targetEntity = utils.getTarget()
+            if ap.UserIndex ~= targetEntity then return end
 
-        if ap.Type == 7 then
-            targetStatus = mobStatus.weaponskill
-        else
-            targetStatus = mobStatus.casting
+            if ap.Type == 7 then
+                targetStatus = mobStatus.weaponskill
+            else
+                targetStatus = mobStatus.casting
+            end
+
+            if dyep.isCasting then
+                print(chat.header(addon.name):append(chat.error('Target became unproccable while casting!! Spell: ' .. dyep.currentSpell)))
+            end
+
+            local mobId = ap.UserId
+            utils.mobActionState[mobId] = os.clock() + 5
         end
+    else
+        local player = GetPlayerEntity()
+        if player ~= nil then
+            local serverId = player.ServerId
 
-        local mobId = ap.UserId
-        utils.mobActionState[mobId] = os.clock() + 5
+            if ap.UserId == serverId then
+                if (ap.Type == 8 or ap.Type == 12) then
+                    local param = ashita.bits.unpack_be(e.data_raw, 10, 6, 16)
+                    if param == 28787 then
+                        dyep.isCasting = false
+                        return
+                    end
+                end
+
+                if actionCompleteTypes:contains(ap.Type) then
+                    dyep.isCasting = false
+                elseif ap.Type == 8 then -- spell start
+                    dyep.isCasting = true
+                end
+            end
+        end
     end
 end)
 

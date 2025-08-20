@@ -87,6 +87,8 @@ function ui.drawUI()
         local ImGuiCol_Button = _G.ImGuiCol_Button or 7
         local ImGuiCol_ButtonHovered = _G.ImGuiCol_ButtonHovered or 8
         local ImGuiCol_ButtonActive = _G.ImGuiCol_ButtonActive or 9
+
+        local skipRest = false
         for _, idx in ipairs(day_indices) do
             local day = day_spells[idx + 1] -- convert 0-based to 1-based for Lua tables
             if day and day.spells then
@@ -107,7 +109,8 @@ function ui.drawUI()
                             if pushedStyle then
                                 imgui.PopStyleColor(3)
                             end
-                            return
+                            skipRest = true
+                            break
                         end
 
                         lastSpell = spell
@@ -122,7 +125,9 @@ function ui.drawUI()
                     end
                 end
                 imgui.NewLine()
+                if skipRest then break end
             end
+            if skipRest then break end
         end
 
         imgui.End()
