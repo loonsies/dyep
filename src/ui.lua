@@ -129,9 +129,8 @@ function ui.drawUI()
             end
             if skipRest then break end
         end
-
-        imgui.End()
     end
+    imgui.End()
 end
 
 function ui.update()
